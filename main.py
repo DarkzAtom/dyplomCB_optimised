@@ -3,14 +3,19 @@ import csv
 
 import openai
 from pinecone import Pinecone
+from dotenv import load_dotenv
+import os
+
+# load env. vars
+load_dotenv(dotenv_path='.env')
 
 # Initialize a Pinecone client with your API key
-apikey_pinecone = "pcsk_39Mp2M_NkLfhLHSzXxW4iddF7iAx6H6EkYGVaRyzMDawYncd3nLQatp6G2bcoJhMVoBuqL"
-openai_apikey = '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'
+apikey_pinecone = os.getenv('APIKEY_PINECONE')
+openai_apikey = os.getenv('OPENAI_APIKEY')
 pc = Pinecone(api_key=apikey_pinecone)
 
 # Create a dense index with integrated embedding
-index_name = "dyplomcb-storedarticles"
+index_name = os.getenv('PINECONE_INDEX_NAME')
 dense_index = pc.Index(index_name)
 
 

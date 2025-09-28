@@ -4,6 +4,8 @@ from tkinter import messagebox
 
 import openai
 from pinecone import Pinecone
+from dotenv import load_dotenv
+import os
 
 
 
@@ -67,13 +69,17 @@ def run_search():
 
 
 
+# load env. vars
+
+load_dotenv(dotenv_path='.env')
+
 # Initialize a Pinecone client with your API key
-apikey_pinecone = "pcsk_39Mp2M_NkLfhLHSzXxW4iddF7iAx6H6EkYGVaRyzMDawYncd3nLQatp6G2bcoJhMVoBuqL"
-openai_apikey = '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'
+apikey_pinecone = os.getenv('APIKEY_PINECONE')
+openai_apikey = os.getenv('OPENAI_APIKEY')
 pc = Pinecone(api_key=apikey_pinecone)
 
 # Create a dense index with integrated embedding
-index_name = "dyplomcb-storedarticles"
+index_name = os.getenv('PINECONE_INDEX_NAME')
 dense_index = pc.Index(index_name)
 
 openai.api_key = openai_apikey
@@ -84,6 +90,24 @@ openai.api_key = openai_apikey
 root = tk.Tk()
 root.title("Simple Similarity Search App")
 root.geometry("600x500")
+
+# listen to the "enter" button to be pressed to run the window
+def handle_enter_key(event):
+    SHIFT_MASK = 0x0001  # Hex value for the Shift modifier state
+
+    if event.state & SHIFT_MASK:
+        # Shift key is held down (Shift + Return)
+        print("Shift + Return detected. Ignoring search execution.")
+        # We also need to tell Tkinter not to process this event further
+        return "break"
+    else:
+        # Unmodified Return key
+        print("Unmodified Return detected. Executing search.")
+        run_search()
+        return "break"
+
+
+root.bind('<Key-Return>', handle_enter_key)
 
 # Create and configure the main frame
 main_frame = ttk.Frame(root, padding="15")
@@ -106,7 +130,7 @@ button_frame = ttk.Frame(main_frame)
 button_frame.pack(pady=15)
 
 # Button to trigger the search
-search_button = ttk.Button(button_frame, text="Run Search", command=run_search)
+search_button = ttk.Button(button_frame, text="Run Search", command=run_search, )
 search_button.pack()
 
 # ---- Output Section ----
